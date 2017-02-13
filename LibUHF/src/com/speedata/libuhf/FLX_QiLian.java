@@ -19,10 +19,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-/**
- * Created by ${çŸ³ç£Š} on 2016/12/14. TO
- */
-
 public class FLX_QiLian implements IUHFService {
 
     private static String TAG = "FLX_QiLian";
@@ -30,7 +26,7 @@ public class FLX_QiLian implements IUHFService {
     private boolean isChecking = false;
     private static UhfPowaer sUhfPowaer;
 
-    //å…¨å±€çš„ä¸²å£å¥æŸ„ï¼Œåº•å±‚é€šè¿‡å¥æŸ„æ“ä½œæ¨¡å—
+    //È«¾ÖµÄ´®¿Ú¾ä±ú£¬µ×²ãÍ¨¹ı¾ä±ú²Ù×÷Ä£¿é
     public static int open_Com = 0;
 
     private inventory_command_thread mInventoryCommandThread = null;
@@ -66,7 +62,7 @@ public class FLX_QiLian implements IUHFService {
 
 
     /**
-     * open_com å½“å…¶å€¼å¤§äº0ï¼Œåˆ™æ‰“å¼€ä¸²å£æˆåŠŸï¼Œå¦åˆ™å¤±è´¥
+     * open_com µ±ÆäÖµ´óÓÚ0£¬Ôò´ò¿ª´®¿Ú³É¹¦£¬·ñÔòÊ§°Ü
      */
     @Override
     public int OpenDev() {
@@ -76,12 +72,14 @@ public class FLX_QiLian implements IUHFService {
             String xinghao = Build.MODEL;
             if (xinghao.equals("KT80") || xinghao.equals("W6") || xinghao.equals("N80")) {
                 sUhfPowaer = new UhfPowaer(POWERCTL, 119);
+            } else if (xinghao.equals("KT55")){
+                sUhfPowaer = new UhfPowaer(POWERCTL, 88);
             } else {
                 sUhfPowaer = new UhfPowaer(POWERCTL, 94);
             }
         }
         try {
-            //åˆå§‹åŒ–æ¨¡å—ï¼Œä¸ºæ¨¡å—ä¸Šç”µï¼Œä¸ºä¿è¯ä¸Šç”µæˆåŠŸï¼Œå»ºè®®å…ˆä¸‹ç”µï¼Œåœ¨ä¸Šç”µ
+            //³õÊ¼»¯Ä£¿é£¬ÎªÄ£¿éÉÏµç£¬Îª±£Ö¤ÉÏµç³É¹¦£¬½¨ÒéÏÈÏÂµç£¬ÔÚÉÏµç
             sUhfPowaer.PowerOffDevice();
             sUhfPowaer.PowerOnDevice();
             Thread.sleep(400);
@@ -106,7 +104,7 @@ public class FLX_QiLian implements IUHFService {
     }
 
     /**
-     * ä¸‹å‘ç›˜ç‚¹å¼€å§‹å‘½ä»¤ï¼Œä¸‹å‘åæ¨¡å—å¾ªç¯å‘å¤–å‘é€ç›˜ç‚¹ä¿¡å· æ³¨æ„ï¼šæœ¬æ¨¡å—å®šä¹‰çš„ç›˜ç‚¹æ¨¡å¼ä¸ºï¼šå¾ªç¯å‘å‘½ä»¤65535æ¬¡åï¼Œæ¨¡å—è‡ªåŠ¨åœæ­¢ç›˜ç‚¹ã€‚ æ‰€ä»¥è¦è¾¾åˆ°é•¿æ—¶é—´ä¸é—´æ–­ç›˜ç‚¹ï¼Œåº”è®¾ç½® ä¸€ä¸ªå®šæ—¶å™¨ï¼Œåœ¨é—´éš”çº¦10åˆ†é’Ÿæ—¶ï¼Œé‡æ–°å‘é€ä¸€æ¬¡ç›˜ç‚¹å¼€å§‹å‘½ä»¤ã€‚
+     * ÏÂ·¢ÅÌµã¿ªÊ¼ÃüÁî£¬ÏÂ·¢ºóÄ£¿éÑ­»·ÏòÍâ·¢ËÍÅÌµãĞÅºÅ ×¢Òâ£º±¾Ä£¿é¶¨ÒåµÄÅÌµãÄ£Ê½Îª£ºÑ­»··¢ÃüÁî65535´Îºó£¬Ä£¿é×Ô¶¯Í£Ö¹ÅÌµã¡£ ËùÒÔÒª´ïµ½³¤Ê±¼ä²»¼ä¶ÏÅÌµã£¬Ó¦ÉèÖÃ Ò»¸ö¶¨Ê±Æ÷£¬ÔÚ¼ä¸ôÔ¼10·ÖÖÓÊ±£¬ÖØĞÂ·¢ËÍÒ»´ÎÅÌµã¿ªÊ¼ÃüÁî¡£
      */
     @Override
     public void inventory_start() {
@@ -121,20 +119,20 @@ public class FLX_QiLian implements IUHFService {
         mGetInventoryDataThread.start();
 
         /**
-         * å®šæ—¶å™¨ï¼Œåœ¨é—´éš”çº¦10åˆ†é’Ÿæ—¶é‡æ–°ä¸‹å‘ç›˜ç‚¹å¼€å§‹å‘½ä»¤
+         * ¶¨Ê±Æ÷£¬ÔÚ¼ä¸ôÔ¼10·ÖÖÓÊ±ÖØĞÂÏÂ·¢ÅÌµã¿ªÊ¼ÃüÁî
          */
         if (timer != null) {
             if (task != null) {
-                task.cancel(); // å°†åŸä»»åŠ¡ä»é˜Ÿåˆ—ä¸­ç§»é™¤
+                task.cancel(); // ½«Ô­ÈÎÎñ´Ó¶ÓÁĞÖĞÒÆ³ı
             }
-            task = new MyTimerTask(); // æ–°å»ºä¸€ä¸ªä»»åŠ¡
+            task = new MyTimerTask(); // ĞÂ½¨Ò»¸öÈÎÎñ
             timer.schedule(task, 10 * 60 * 1000, 10 * 60 * 1000);
         }
 
     }
 
     /**
-     * è¯¥æ–¹æ³•å¿…å®šæ˜¯åœ¨inventory_start()è°ƒç”¨åï¼Œæ‰èƒ½è°ƒç”¨ï¼Œè°ƒç”¨è¯¥æ–¹æ³•ä¼šå¼€å¯ä¸€ä¸ªæ­»å¾ªç¯ï¼Œæ— é™æ¥æ”¶æ¨¡å—è¿”å›çš„æ•°æ®ï¼Œå¹¶å¤„ç†
+     * ¸Ã·½·¨±Ø¶¨ÊÇÔÚinventory_start()µ÷ÓÃºó£¬²ÅÄÜµ÷ÓÃ£¬µ÷ÓÃ¸Ã·½·¨»á¿ªÆôÒ»¸öËÀÑ­»·£¬ÎŞÏŞ½ÓÊÕÄ£¿é·µ»ØµÄÊı¾İ£¬²¢´¦Àí
      */
     @Override
     public void inventory_start(Handler hd) {
@@ -180,10 +178,10 @@ public class FLX_QiLian implements IUHFService {
 
 
     /*
-     * è¯»æ ‡ç­¾å‡½æ•°
-     * å‚æ•° areaï¼š1:ä¸ºEPCåŒºåŸŸã€‚2ï¼šä¸ºTIDåŒºåŸŸã€‚3ï¼šä¸ºUSERåŒºåŸŸã€‚
-     * ä»æ ‡ç­¾ area åŒºçš„ addr ä½ç½®ï¼ˆä»¥ word è®¡ç®—ï¼‰è¯»å– count ä¸ªå€¼ï¼ˆä»¥ word è®¡ç®—ï¼‰
-   * passwd æ˜¯è®¿é—®å¯†ç ï¼Œå¦‚æœåŒºåŸŸæ²¡è¢«é”å°±ç»™ 0 å€¼ã€‚
+     * ¶Á±êÇ©º¯Êı
+     * ²ÎÊı area£º1:ÎªEPCÇøÓò¡£2£ºÎªTIDÇøÓò¡£3£ºÎªUSERÇøÓò¡£
+     * ´Ó±êÇ© area ÇøµÄ addr Î»ÖÃ£¨ÒÔ word ¼ÆËã£©¶ÁÈ¡ count ¸öÖµ£¨ÒÔ word ¼ÆËã£©
+   * passwd ÊÇ·ÃÎÊÃÜÂë£¬Èç¹ûÇøÓòÃ»±»Ëø¾Í¸ø 0 Öµ¡£
      */
     @Override
     public byte[] read_area(int area, int addr, int count, int passwd) {
@@ -199,7 +197,7 @@ public class FLX_QiLian implements IUHFService {
                 result);
 
         if ((ReadText != null) && (result.value == 0)) {
-            Log.i(TAG, "--------ReadText åŸå§‹--------" + Linkage.c2hexs(ReadText, ReadText.length));
+            Log.i(TAG, "--------ReadText Ô­Ê¼--------" + Linkage.c2hexs(ReadText, ReadText.length));
             return charToByte(ReadText, ReadText.length);
         }
         return null;
@@ -230,7 +228,7 @@ public class FLX_QiLian implements IUHFService {
         }
         return j;
     }
-    // byteè½¬char
+    // byte×ªchar
 
     private static char[] byteToChar(byte[] data, int length) {
         if (length % 2 == 0) {
@@ -257,19 +255,23 @@ public class FLX_QiLian implements IUHFService {
     }
 
     /*
-     * å†™å…¥æ ‡ç­¾å‡½æ•°
-     * 1:ä¸ºEPCåŒºåŸŸã€‚2ï¼šä¸ºTIDåŒºåŸŸã€‚3ï¼šä¸ºUSERåŒºåŸŸã€‚
-     * ä»æ ‡ç­¾ area åŒºçš„ addr ä½ç½®ï¼ˆä»¥ word è®¡ç®—ï¼‰å†™å…¥count ä¸ªå€¼ï¼ˆä»¥ word è®¡ç®—ï¼‰
-   * passwd æ˜¯è®¿é—®å¯†ç ï¼Œå¦‚æœåŒºåŸŸæ²¡è¢«é”å°±ç»™ 0 å€¼ã€‚
+     * Ğ´Èë±êÇ©º¯Êı
+     * 1:ÎªEPCÇøÓò¡£2£ºÎªTIDÇøÓò¡£3£ºÎªUSERÇøÓò¡£
+     * ´Ó±êÇ© area ÇøµÄ addr Î»ÖÃ£¨ÒÔ word ¼ÆËã£©Ğ´Èëcount ¸öÖµ£¨ÒÔ word ¼ÆËã£©
+   * passwd ÊÇ·ÃÎÊÃÜÂë£¬Èç¹ûÇøÓòÃ»±»Ëø¾Í¸ø 0 Öµ¡£
      */
     @Override
     public int write_area(int area, int addr, int passwd, byte[] content) {
-
+        if ((content.length % 2) != 0){
+            return -3;
+        }
         int result = -1;
 
         if ((area >= 0) && (area <= 3)) {
             char[] access_password = getCharsPassword(passwd);
-
+            if ((access_password.length%2) !=0){
+                return -2;
+            }
             result = Linkage.write_Label(open_Com, area, addr, (content.length / 4), byteToChar(content, content.length),
                     access_password);
         }
@@ -297,7 +299,7 @@ public class FLX_QiLian implements IUHFService {
     }
 
     /**
-     * å°†ä¸€ä¸ªå¯èƒ½å¸¦ç©ºæ ¼çš„å­—ç¬¦ä¸²ï¼Œä»¥Byte.parseByteçš„æ–¹æ³•è½¬åŒ–ä¸ºbyteæ•°ç»„
+     * ½«Ò»¸ö¿ÉÄÜ´ø¿Õ¸ñµÄ×Ö·û´®£¬ÒÔByte.parseByteµÄ·½·¨×ª»¯ÎªbyteÊı×é
      */
     private byte[] getBytes(String data) {
         String newData = data.trim().replace(" ", "");
@@ -324,17 +326,17 @@ public class FLX_QiLian implements IUHFService {
     }
 
     /**
-     * å¯ç”¨æ©ç ï¼šè¿”å›å€¼0ï¼šä¸ºæˆåŠŸï¼Œå…¶ä»–å‡ä¸ºå¤±è´¥ æ³¨æ„ï¼š1ã€å½“éœ€è¦å¯ç”¨æ©ç æ—¶ï¼Œæ³¨æ„å½“æ©ç é•¿åº¦ä¸º0æ—¶ï¼Œæ©ç å¯ç”¨æ— æ•ˆçš„ï¼Œç›¸å½“äºå–æ¶ˆäº†æ©ç  2ã€è®¾ç½®æ©ç ï¼ˆæ©ç é•¿åº¦ä¸ä¸º0çš„ï¼‰æˆåŠŸåï¼Œåœ¨ä¸é€€å‡ºç¨‹åºï¼Œä¸æ‰§è¡Œç¬¬ä¸€æ¡çš„æƒ…å†µä¸‹ï¼Œè¯¥æ©ç ä¸€ç›´æœ‰æ•ˆã€‚
-     * 3ã€å–æ¶ˆæ©ç ï¼šåº”è®¾ç½®æ©ç é•¿åº¦ä¸º0ï¼Œå¹¶åœ¨å¯ç”¨æ©ç çŠ¶æ€è¯»å–ä¸€æ¬¡ï¼Œæœ¬æ¨¡å—æ— å–æ¶ˆæ©ç å‡½æ•°
+     * ÆôÓÃÑÚÂë£º·µ»ØÖµ0£ºÎª³É¹¦£¬ÆäËû¾ùÎªÊ§°Ü ×¢Òâ£º1¡¢µ±ĞèÒªÆôÓÃÑÚÂëÊ±£¬×¢Òâµ±ÑÚÂë³¤¶ÈÎª0Ê±£¬ÑÚÂëÆôÓÃÎŞĞ§µÄ£¬Ïàµ±ÓÚÈ¡ÏûÁËÑÚÂë 2¡¢ÉèÖÃÑÚÂë£¨ÑÚÂë³¤¶È²»Îª0µÄ£©³É¹¦ºó£¬ÔÚ²»ÍË³ö³ÌĞò£¬²»Ö´ĞĞµÚÒ»ÌõµÄÇé¿öÏÂ£¬¸ÃÑÚÂëÒ»Ö±ÓĞĞ§¡£
+     * 3¡¢È¡ÏûÑÚÂë£ºÓ¦ÉèÖÃÑÚÂë³¤¶ÈÎª0£¬²¢ÔÚÆôÓÃÑÚÂë×´Ì¬¶ÁÈ¡Ò»´Î£¬±¾Ä£¿éÎŞÈ¡ÏûÑÚÂëº¯Êı
      */
     @Override
     public int select_card(byte[] epc) {
 
-        int epc_area = 1;//1:ä¸ºEPCåŒºåŸŸã€‚2ï¼šä¸ºTIDåŒºåŸŸã€‚3ï¼šä¸ºUSERåŒºåŸŸã€‚
+        int epc_area = 1;//1:ÎªEPCÇøÓò¡£2£ºÎªTIDÇøÓò¡£3£ºÎªUSERÇøÓò¡£
         int epc_lenght = epc.length / 4;
         int epc_add = 2;
-        int mask_sel = 0;//æ³¨æ„ï¼šè¯¥å‚æ•°å¿…é¡»å’Œæ¨¡å—ä¸­å‚æ•°çš„selå€¼ä¿æŒä¸€è‡´ï¼ˆå½“å‰ä¸ºæ¨¡å—åˆå§‹å€¼ï¼‰
-        int mask_session = 0;//æ³¨æ„ï¼šè¯¥å‚æ•°å¿…é¡»å’Œæ¨¡å—ä¸­å‚æ•°çš„sessionå€¼ä¿æŒä¸€è‡´ï¼ˆå½“å‰ä¸ºæ¨¡å—åˆå§‹å€¼ï¼‰
+        int mask_sel = 0;//×¢Òâ£º¸Ã²ÎÊı±ØĞëºÍÄ£¿éÖĞ²ÎÊıµÄselÖµ±£³ÖÒ»ÖÂ£¨µ±Ç°ÎªÄ£¿é³õÊ¼Öµ£©
+        int mask_session = 0;//×¢Òâ£º¸Ã²ÎÊı±ØĞëºÍÄ£¿éÖĞ²ÎÊıµÄsessionÖµ±£³ÖÒ»ÖÂ£¨µ±Ç°ÎªÄ£¿é³õÊ¼Öµ£©
 
 
         if (epc.length > 0) {
@@ -352,7 +354,7 @@ public class FLX_QiLian implements IUHFService {
         return 0;
     }
 
-    //è®¾ç½®å¯†ç 
+    //ÉèÖÃÃÜÂë
     public int set_Password(int which, String cur_pass, String new_pass){
         if (which > 1 || which < 0) {
             return -1;
@@ -363,8 +365,8 @@ public class FLX_QiLian implements IUHFService {
     }
 
     /**
-     * @param power å–å€¼ä¸º19åˆ°30ä¹‹é—´,å°äº19çš„å€¼è®¾ç½®æˆåŠŸåï¼ŒåŠŸç‡ä¾ç„¶æ˜¯19ï¼Œå¤§äº30çš„åŠŸç‡è®¾ç½®æˆåŠŸåï¼ŒåŠŸç‡ä¾ç„¶æ˜¯30 poweræœ€å¤§å€¼30ï¼Œæœ€å°å€¼19
-     * @return è¿”å›0ä¸ºæˆåŠŸï¼Œå…¶ä»–å‡ä¸ºå¤±è´¥
+     * @param power È¡ÖµÎª19µ½30Ö®¼ä,Ğ¡ÓÚ19µÄÖµÉèÖÃ³É¹¦ºó£¬¹¦ÂÊÒÀÈ»ÊÇ19£¬´óÓÚ30µÄ¹¦ÂÊÉèÖÃ³É¹¦ºó£¬¹¦ÂÊÒÀÈ»ÊÇ30 power×î´óÖµ30£¬×îĞ¡Öµ19
+     * @return ·µ»Ø0Îª³É¹¦£¬ÆäËû¾ùÎªÊ§°Ü
      */
     @Override
     public int set_antenna_power(int power) {
@@ -373,7 +375,7 @@ public class FLX_QiLian implements IUHFService {
     }
 
     /**
-     * @return value_c.value å€¼ä¸º0æˆåŠŸï¼Œå…¶ä»–å‡ä¸ºå¤±è´¥
+     * @return value_c.value ÖµÎª0³É¹¦£¬ÆäËû¾ùÎªÊ§°Ü
      */
     @Override
     public int get_antenna_power() {
@@ -413,8 +415,8 @@ public class FLX_QiLian implements IUHFService {
 
 
     /**
-     * @param region ä¸ºregion=1:ä¸­å›½920_925(0),region=0ï¼šä¸­å›½840_845(4),region=2æ¬§è§„;
-     * @return å€¼ä¸º0æˆåŠŸï¼Œå…¶ä»–å‡ä¸ºå¤±è´¥
+     * @param region Îªregion=1:ÖĞ¹ú920_925(0),region=0£ºÖĞ¹ú840_845(4),region=2Å·¹æ;
+     * @return ÖµÎª0³É¹¦£¬ÆäËû¾ùÎªÊ§°Ü
      */
     @Override
     public int set_freq_region(int region) {
@@ -437,7 +439,7 @@ public class FLX_QiLian implements IUHFService {
         return Linkage.set_Region(open_Com, region_ql);
     }
 
-    //æ²¡æœ‰è·å–é¢‘ç‡åŒºåŸŸçš„å‡½æ•°ï¼Ÿ
+    //Ã»ÓĞ»ñÈ¡ÆµÂÊÇøÓòµÄº¯Êı£¿
     @Override
     public int get_freq_region() {
         return -1;
@@ -448,17 +450,17 @@ public class FLX_QiLian implements IUHFService {
         mHandler = hd;
     }
 
-    // 0ï¼šå¼€æ”¾
-    // 1ï¼šæ°¸ä¹…å¼€æ”¾
-    // 2ï¼šé”å®š
-    // 3ï¼šæ°¸ä¹…é”å®š
+    // 0£º¿ª·Å
+    // 1£ºÓÀ¾Ã¿ª·Å
+    // 2£ºËø¶¨
+    // 3£ºÓÀ¾ÃËø¶¨
     private static final int KILL_PASSWORD_AREA = 0;
     private static final int ACCESS_PASSWORD_AREA = 1;
     private static final int EPC_AREA = 2;
     private static final int TID_AREA = 3;
     private static final int USER_AREA = 4;
 
-    //é”å®šæ ‡ç­¾
+    //Ëø¶¨±êÇ©
     @Override
     public int setlock(int type, int area, int passwd) {
 
@@ -466,7 +468,7 @@ public class FLX_QiLian implements IUHFService {
         if (type < 0 || type > 3 || area < 0 || area > 4) {
             return -1;
         }
-        //æ ¹æ®domeç•Œé¢æ˜¾ç¤ºä¸åŒ è½¬æ¢
+        //¸ù¾İdome½çÃæÏÔÊ¾²»Í¬ ×ª»»
         int newType = -1;
         if (type == 0) {
             newType = 0;
@@ -483,10 +485,10 @@ public class FLX_QiLian implements IUHFService {
         char[] access_password = getCharsPassword(passwd);
 
         /**
-         * é”å®šæ ‡ç­¾å‡½æ•°çš„å‚æ•°ï¼šä»ç¬¬ä¸€ä¸ªå‚æ•°èµ·ä¾æ¬¡æ˜¯ï¼š
-         * ä¸²å£å¥æŸ„ï¼Œè®¿é—®å¯†ç ï¼Œé”€æ¯å¯†ç æ˜¯å¦é”å®šï¼ˆ0ä¸è®¾ç½®ï¼Œ1è®¾ç½®ï¼‰ï¼Œé”€æ¯å¯†ç åŒºé”å®šçº§åˆ«ï¼Œè®¿é—®å¯†ç æ˜¯å¦é”å®š0ä¸è®¾ç½®ï¼Œ1è®¾ç½®ï¼‰ï¼Œè®¿é—®å¯†ç åŒºé”å®šçº§åˆ«
-         * ï¼ŒepcåŒºæ˜¯å¦é”å®šï¼ˆ0ä¸è®¾ç½®ï¼Œ1è®¾ç½®ï¼‰ï¼Œeps	åŒºé”å®šçº§åˆ«ï¼Œtidå¯†ç æ˜¯å¦é”å®šï¼ˆ0ä¸è®¾ç½®ï¼Œ1è®¾ç½®ï¼‰ï¼ŒtidåŒºé”å®šçº§åˆ«ï¼Œ
-         * useræ˜¯å¦é”å®šï¼ˆ0ä¸è®¾ç½®ï¼Œ1è®¾ç½®ï¼‰ï¼ŒuseråŒºé”å®šçº§åˆ«ã€‚
+         * Ëø¶¨±êÇ©º¯ÊıµÄ²ÎÊı£º´ÓµÚÒ»¸ö²ÎÊıÆğÒÀ´ÎÊÇ£º
+         * ´®¿Ú¾ä±ú£¬·ÃÎÊÃÜÂë£¬Ïú»ÙÃÜÂëÊÇ·ñËø¶¨£¨0²»ÉèÖÃ£¬1ÉèÖÃ£©£¬Ïú»ÙÃÜÂëÇøËø¶¨¼¶±ğ£¬·ÃÎÊÃÜÂëÊÇ·ñËø¶¨0²»ÉèÖÃ£¬1ÉèÖÃ£©£¬·ÃÎÊÃÜÂëÇøËø¶¨¼¶±ğ
+         * £¬epcÇøÊÇ·ñËø¶¨£¨0²»ÉèÖÃ£¬1ÉèÖÃ£©£¬eps	ÇøËø¶¨¼¶±ğ£¬tidÃÜÂëÊÇ·ñËø¶¨£¨0²»ÉèÖÃ£¬1ÉèÖÃ£©£¬tidÇøËø¶¨¼¶±ğ£¬
+         * userÊÇ·ñËø¶¨£¨0²»ÉèÖÃ£¬1ÉèÖÃ£©£¬userÇøËø¶¨¼¶±ğ¡£
          * lock_Label(int hReader, char[] pwd, int kill_mask, int kill_action, int access_mask,
          *int access_action, int EPC_mask, int EPC_action, int TID_mask, int TID_action,
          *int USER_mask, int USER_action);
@@ -524,7 +526,7 @@ public class FLX_QiLian implements IUHFService {
     }
 
 
-    //é”€æ¯æ ‡ç­¾
+    //Ïú»Ù±êÇ©
     public int setkill(int ap, int kp) {
 
         char[] kill_password = new char[4];
@@ -534,7 +536,7 @@ public class FLX_QiLian implements IUHFService {
         kill_password[2] = (char) ((kp / 0x100) % 0x100);
         kill_password[3] = (char) ((kp) % 0x100);
 
-        //é”€æ¯æ ‡ç­¾ï¼šæœ¬å‡½æ•°åªéœ€è¦å°†è¦è¢«é”€æ¯çš„æ ‡ç­¾çš„é”€æ¯å¯†ç 
+        //Ïú»Ù±êÇ©£º±¾º¯ÊıÖ»ĞèÒª½«Òª±»Ïú»ÙµÄ±êÇ©µÄÏú»ÙÃÜÂë
         int kill_status = Linkage.kill_Label(open_Com, kill_password);
 
         if (kill_status != 0) {
@@ -544,7 +546,7 @@ public class FLX_QiLian implements IUHFService {
     }
 
     /**
-     * å®šæ—¶å™¨ä»»åŠ¡ï¼šåœ¨æŒ‡å®šçš„æ—¶é—´ä¹‹åï¼Œé‡æ–°ä¸‹å‘ç›˜ç‚¹æŒ‡ä»¤
+     * ¶¨Ê±Æ÷ÈÎÎñ£ºÔÚÖ¸¶¨µÄÊ±¼äÖ®ºó£¬ÖØĞÂÏÂ·¢ÅÌµãÖ¸Áî
      */
     private class MyTimerTask extends TimerTask {
 
@@ -555,4 +557,3 @@ public class FLX_QiLian implements IUHFService {
 
     }
 }
-

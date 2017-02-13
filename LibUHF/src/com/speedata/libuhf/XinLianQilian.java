@@ -1,37 +1,85 @@
 package com.speedata.libuhf;
 
 
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+
 import com.pow.api.cls.RfidPower;
 import com.uhf.api.cls.Reader;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * æ——è¿žèŠ¯ç‰‡  èŠ¯è”æ–¹æ¡ˆ
- * Created by å¼ æ˜Ž_ on 2016/11/29.
+ * ÆìÁ¬Ð¾Æ¬  Ð¾Áª·½°¸
+ * Created by ÕÅÃ÷_ on 2016/11/29.
  */
 public class XinLianQilian implements IUHFService {
 
     private static Reader Mreader = new Reader();
     private static int antportc;
     private static RfidPower.PDATYPE PT;
-    private static RfidPower Rpower ;
+    private static RfidPower Rpower;
     private Handler handler_inventer = null;
     private ReaderParams Rparams = new ReaderParams();
     private int ThreadMODE = 0;
     private Handler handler = new Handler();
     public boolean nostop = false;
     Reader.TagFilter_ST g2tf = null;
+    private DeviceControl deviceControl;
+    private DeviceControl deviceControl55;
+    private DeviceControl deviceControl80;
 
 
-    //åˆå§‹åŒ–æ¨¡å—
+    //³õÊ¼»¯Ä£¿é
     public int OpenDev() {
         if (android.os.Build.VERSION.RELEASE.equals("4.4.2")) {
-            PT = RfidPower.PDATYPE.valueOf(4);
-        }else if (android.os.Build.VERSION.RELEASE.equals("5.1")){
+            deviceControl = new DeviceControl("/sys/class/misc/mtgpio/pin", 64);
+            int i = deviceControl.PowerOnDevice();
+            if (i==0){
+                Reader.READER_ERR er = Mreader.InitReader_Notype(SERIALPORT, 1);
+                if (er == Reader.READER_ERR.MT_OK_ERR) {
+                    antportc = 1;
+                } else {
+                    return -1;
+                }
+            }else {
+                return -1;
+            }
+            return 0;
+        } else if (android.os.Build.VERSION.RELEASE.equals("5.1")) {
+            String xinghao = Build.MODEL;
+            if (xinghao.equals("KT55")){
+                deviceControl55 = new DeviceControl("/sys/class/misc/mtgpio/pin", 88);
+                int i = deviceControl55.PowerOnDevice();
+                if (i==0){
+                    Reader.READER_ERR er = Mreader.InitReader_Notype(SERIALPORT, 1);
+                    if (er == Reader.READER_ERR.MT_OK_ERR) {
+                        antportc = 1;
+                    } else {
+                        return -1;
+                    }
+                }else {
+                    return -1;
+                }
+                return 0;
+            }else if (xinghao.equals("KT80") || xinghao.equals("W6") || xinghao.equals("N80")){
+                deviceControl80 = new DeviceControl("/sys/class/misc/mtgpio/pin", 119);
+                int i = deviceControl80.PowerOnDevice();
+                if (i==0){
+                    Reader.READER_ERR er = Mreader.InitReader_Notype(SERIALPORT, 1);
+                    if (er == Reader.READER_ERR.MT_OK_ERR) {
+                        antportc = 1;
+                    } else {
+                        return -1;
+                    }
+                }else {
+                    return -1;
+                }
+                return 0;
+            }
             PT = RfidPower.PDATYPE.valueOf(19);
         }
         Rpower = new RfidPower(PT);
@@ -53,14 +101,25 @@ public class XinLianQilian implements IUHFService {
         return 0;
     }
 
-    //å…³é—­æ¨¡å—
+    //¹Ø±ÕÄ£¿é
     public void CloseDev() {
         if (Mreader != null)
             Mreader.CloseReader();
-        Rpower.PowerDown();
+        if (android.os.Build.VERSION.RELEASE.equals("4.4.2")) {
+            deviceControl.PowerOffDevice();
+        }else if (android.os.Build.VERSION.RELEASE.equals("5.1")){
+            String xinghao = Build.MODEL;
+            if (xinghao.equals("KT55")){
+                deviceControl55.PowerOffDevice();
+            }else if (xinghao.equals("KT80") || xinghao.equals("W6") || xinghao.equals("N80")){
+                deviceControl80.PowerOffDevice();
+            } else {
+                Rpower.PowerDown();
+            }
+        }
     }
 
-    //æ³¨å†Œè¿‡ Handler åŽè°ƒç”¨æ­¤å‡½æ•°å¼€å§‹ç›˜ç‚¹è¿‡ç¨‹
+    //×¢²á¹ý Handler ºóµ÷ÓÃ´Ëº¯Êý¿ªÊ¼ÅÌµã¹ý³Ì
     public void inventory_start() {
         cancelSelect();
         handler.postDelayed(inv_thread, 0);
@@ -72,13 +131,13 @@ public class XinLianQilian implements IUHFService {
         inventory_start();
     }
 
-    //åœæ­¢ç›˜ç‚¹ã€‚
+    //Í£Ö¹ÅÌµã¡£
     public void inventory_stop() {
         handler.removeCallbacks(inv_thread);
     }
 
-    //ä»Žæ ‡ç­¾ area åŒºçš„ addr ä½ç½®ï¼ˆä»¥ word è®¡ç®—ï¼‰è¯»å– count ä¸ªå€¼ï¼ˆä»¥ byte è®¡ç®—ï¼‰
-    // passwd æ˜¯è®¿é—®å¯†ç ï¼Œå¦‚æžœåŒºåŸŸæ²¡è¢«é”å°±ç»™ 0 å€¼ã€‚
+    //´Ó±êÇ© area ÇøµÄ addr Î»ÖÃ£¨ÒÔ word ¼ÆËã£©¶ÁÈ¡ count ¸öÖµ£¨ÒÔ byte ¼ÆËã£©
+    // passwd ÊÇ·ÃÎÊÃÜÂë£¬Èç¹ûÇøÓòÃ»±»Ëø¾Í¸ø 0 Öµ¡£
     public byte[] read_area(int area, int addr, int count, int passwd) {
         if ((area > 3) || (area < 0) || ((count % 2) != 0)) {
             return null;
@@ -109,8 +168,9 @@ public class XinLianQilian implements IUHFService {
         }
         return null;
     }
+
     public String read_area(int area, String str_addr
-            , String str_count, String str_passwd){
+            , String str_count, String str_passwd) {
         int num_addr;
         int num_count;
         long passwd;
@@ -118,12 +178,13 @@ public class XinLianQilian implements IUHFService {
             num_addr = Integer.parseInt(str_addr, 16);
             num_count = Integer.parseInt(str_count, 10);
             passwd = Long.parseLong(str_passwd, 16);
-        }catch (NumberFormatException p) {
+        } catch (NumberFormatException p) {
             return null;
         }
         String res = read_card(area, num_addr, num_count * 2, (int) passwd);
         return res;
     }
+
     private String read_card(int area, int addr, int count, int passwd) {
         byte[] v = read_area(area, addr, count, passwd);
         if (v == null) {
@@ -137,8 +198,7 @@ public class XinLianQilian implements IUHFService {
     }
 
 
-
-    //æŠŠ content ä¸­çš„æ•°æ®å†™åˆ°æ ‡ç­¾ area åŒºä¸­ addrï¼ˆä»¥ word è®¡ç®—ï¼‰å¼€å§‹çš„ä½ ç½®ã€‚
+    //°Ñ content ÖÐµÄÊý¾ÝÐ´µ½±êÇ© area ÇøÖÐ addr£¨ÒÔ word ¼ÆËã£©¿ªÊ¼µÄÎ» ÖÃ¡£
     public int write_area(int area, int addr, int passwd, byte[] content) {
         try {
             byte[] rpaswd = new byte[4];
@@ -164,7 +224,8 @@ public class XinLianQilian implements IUHFService {
         }
         return 0;
     }
-    public int write_area(int area, String addr, String pwd, String count, String content){
+
+    public int write_area(int area, String addr, String pwd, String count, String content) {
         int num_addr;
         int num_count;
         long passwd;
@@ -172,13 +233,14 @@ public class XinLianQilian implements IUHFService {
             num_addr = Integer.parseInt(addr, 16);
             num_count = Integer.parseInt(count, 10);
             passwd = Long.parseLong(pwd, 16);
-        }catch (NumberFormatException p) {
+        } catch (NumberFormatException p) {
             return -3;
         }
         int rev = write_card(area, num_addr, num_count * 2,
                 (int) passwd, content);
         return rev;
     }
+
     public int write_card(int area, int addr, int count, int passwd, String cnt) {
         byte[] cf;
         StringTokenizer cn = new StringTokenizer(cnt);
@@ -202,7 +264,7 @@ public class XinLianQilian implements IUHFService {
     }
 
 
-    //é€‰ä¸­è¦è¿›è¡Œæ“ä½œçš„ epc æ ‡ç­¾
+    //Ñ¡ÖÐÒª½øÐÐ²Ù×÷µÄ epc ±êÇ©
     public int select_card(byte[] epc) {
         g2tf = Mreader.new TagFilter_ST();
         g2tf.fdata = epc;
@@ -216,6 +278,7 @@ public class XinLianQilian implements IUHFService {
         }
         return 0;
     }
+
     public int select_card(String epc) {
         byte[] eepc;
         StringTokenizer sepc = new StringTokenizer(epc);
@@ -235,7 +298,7 @@ public class XinLianQilian implements IUHFService {
     }
 
 
-    //è®¾ç½®å¤©çº¿åŠŸçŽ‡
+    //ÉèÖÃÌìÏß¹¦ÂÊ
     public int set_antenna_power(int power) {
         Reader.AntPowerConf apcf = Mreader.new AntPowerConf();
         apcf.antcnt = antportc;
@@ -267,7 +330,7 @@ public class XinLianQilian implements IUHFService {
         return 0;
     }
 
-    //è¯»å–å½“å‰å¤©çº¿åŠŸçŽ‡å€¼
+    //¶ÁÈ¡µ±Ç°ÌìÏß¹¦ÂÊÖµ
     public int get_antenna_power() {
         int rv = 0;
         try {
@@ -288,7 +351,7 @@ public class XinLianQilian implements IUHFService {
         return rv;
     }
 
-    //è®¾å®šåŒºåŸŸé”å®šçŠ¶æ€ã€‚
+    //Éè¶¨ÇøÓòËø¶¨×´Ì¬¡£
     public int setlock(int type, int area, int passwd) {
         try {
             Reader.Lock_Obj lobj = null;
@@ -301,7 +364,7 @@ public class XinLianQilian implements IUHFService {
                     ltyp = Reader.Lock_Type.ACCESS_PASSWD_LOCK;
                 else if (type == 2)
                     return -1;
-                else if (type==3){
+                else if (type == 3) {
                     ltyp = Reader.Lock_Type.ACCESS_PASSWD_PERM_LOCK;
                 }
 
@@ -313,7 +376,7 @@ public class XinLianQilian implements IUHFService {
                     ltyp = Reader.Lock_Type.KILL_PASSWORD_LOCK;
                 else if (type == 2)
                     return -1;
-                else if (type==3){
+                else if (type == 3) {
                     ltyp = Reader.Lock_Type.KILL_PASSWORD_PERM_LOCK;
                 }
             } else if (area == 2) {
@@ -324,7 +387,7 @@ public class XinLianQilian implements IUHFService {
                     ltyp = Reader.Lock_Type.BANK1_LOCK;
                 else if (type == 2)
                     return -1;
-                else if (type==3)
+                else if (type == 3)
                     ltyp = Reader.Lock_Type.BANK1_PERM_LOCK;
             } else if (area == 3) {
                 lobj = Reader.Lock_Obj.LOCK_OBJECT_BANK2;
@@ -334,7 +397,7 @@ public class XinLianQilian implements IUHFService {
                     ltyp = Reader.Lock_Type.BANK2_LOCK;
                 else if (type == 2)
                     return -1;
-                else if (type==3)
+                else if (type == 3)
                     ltyp = Reader.Lock_Type.BANK2_PERM_LOCK;
             } else if (area == 4) {
                 lobj = Reader.Lock_Obj.LOCK_OBJECT_BANK3;
@@ -344,7 +407,7 @@ public class XinLianQilian implements IUHFService {
                     ltyp = Reader.Lock_Type.BANK3_LOCK;
                 else if (type == 2)
                     return -1;
-                else if (type==3)
+                else if (type == 3)
                     ltyp = Reader.Lock_Type.BANK3_PERM_LOCK;
             }
             byte[] rpaswd = new byte[4];
@@ -364,8 +427,8 @@ public class XinLianQilian implements IUHFService {
         return 0;
     }
 
-    //è®¾ç½®å¯†ç 
-    public int set_Password(int which, String cur_pass, String new_pass){
+    //ÉèÖÃÃÜÂë
+    public int set_Password(int which, String cur_pass, String new_pass) {
         if (which > 1 || which < 0) {
             return -1;
         }
@@ -391,7 +454,7 @@ public class XinLianQilian implements IUHFService {
     }
 
 
-    //è®¾ç½®é¢‘çŽ‡åŒºåŸŸ
+    //ÉèÖÃÆµÂÊÇøÓò
     public int set_freq_region(int region) {
         try {
             Reader.Region_Conf rre;
@@ -452,7 +515,7 @@ public class XinLianQilian implements IUHFService {
         }
     }
 
-    //è®¾ç½®æ¨¡å¼
+    //ÉèÖÃÄ£Ê½
     public int set_inventory_mode(int m) {
 //        int[] val = new int[]{m};
 //        Reader.READER_ERR er = Mreader.ParamSet(
@@ -463,7 +526,7 @@ public class XinLianQilian implements IUHFService {
         return -1;
     }
 
-    //èŽ·å¾—æ¨¡å¼
+    //»ñµÃÄ£Ê½
     public int get_inventory_mode() {
 //        int[] val = new int[]{-1};
 //        Reader.READER_ERR er = Mreader.ParamGet(
@@ -489,14 +552,17 @@ public class XinLianQilian implements IUHFService {
                     if (tagcnt[0] > 0) {
                         for (int i = 0; i < tagcnt[0]; i++) {
                             Reader.TAGINFO tfs = Mreader.new TAGINFO();
-                            if (Rpower.GetType() == RfidPower.PDATYPE.SCAN_ALPS_ANDROID_CUIUS2) {
-                                try {
-                                    Thread.sleep(10);
-                                } catch (InterruptedException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                }
-                            }
+//                            if (android.os.Build.VERSION.RELEASE.equals("5.1")) {
+//                                if (Rpower.GetType() == RfidPower.PDATYPE.SCAN_ALPS_ANDROID_CUIUS2) {
+//                                    try {
+//                                        Thread.sleep(10);
+//                                    } catch (InterruptedException e) {
+//                                        // TODO Auto-generated catch block
+//                                        e.printStackTrace();
+//                                    }
+//                                }
+//                            }
+
                             if (nostop)
                                 er = Mreader.AsyncGetNextTag(tfs);
                             else
@@ -540,12 +606,12 @@ public class XinLianQilian implements IUHFService {
     }
 
 
-    //ç”¨æˆ·éœ€è¦è‡ªå·±å®žçŽ°ä¸€ä¸ª Handlerï¼Œç„¶åŽç”¨äº›å‡½æ•°å‘ API æ³¨å†Œï¼Œç„¶åŽæ‰å¯ä»¥ å¼€å§‹ç›˜ç‚¹ã€‚
-    // ç›˜ç‚¹åˆ°çš„ EPC ç­‰æ•°æ®ä¼šé€šè¿‡å‘æ³¨å†Œçš„ Handler å‘æ¶ˆæ¯ ï¼ˆMessageï¼‰çš„æ–¹å¼æ¥å®žçŽ°ã€‚
-    // å½“æœç´¢åˆ°æœ‰æ•ˆ EPC å’Œ TID æ•°æ®åŽï¼ŒHandler ä¼šæ”¶åˆ° Messageï¼Œå…¶ä¸­ Meseage.what å€¼ä¸º 1ï¼Œ
-    // Message.obj å°±æ˜¯ä¿å­˜äº† EPC æ•°æ®çš„ Tag_Dataç±»çš„ArrayListã€‚
-    // Tag_Data ç±»æœ‰ä¸¤ä¸ªbyte[ ]åž‹çš„public æˆå‘˜ï¼Œä¸€ä¸ªæ˜¯ epcï¼Œä¸€ä¸ªæ˜¯ tidï¼Œå¦‚æžœä¸º nullï¼Œ
-    // ä»£è¡¨å¯¹åº”çš„å€¼ä¸å­˜åœ¨ã€‚
+    //ÓÃ»§ÐèÒª×Ô¼ºÊµÏÖÒ»¸ö Handler£¬È»ºóÓÃÐ©º¯ÊýÏò API ×¢²á£¬È»ºó²Å¿ÉÒÔ ¿ªÊ¼ÅÌµã¡£
+    // ÅÌµãµ½µÄ EPC µÈÊý¾Ý»áÍ¨¹ýÏò×¢²áµÄ Handler ·¢ÏûÏ¢ £¨Message£©µÄ·½Ê½À´ÊµÏÖ¡£
+    // µ±ËÑË÷µ½ÓÐÐ§ EPC ºÍ TID Êý¾Ýºó£¬Handler »áÊÕµ½ Message£¬ÆäÖÐ Meseage.what ÖµÎª 1£¬
+    // Message.obj ¾ÍÊÇ±£´æÁË EPC Êý¾ÝµÄ Tag_DataÀàµÄArrayList¡£
+    // Tag_Data ÀàÓÐÁ½¸öbyte[ ]ÐÍµÄpublic ³ÉÔ±£¬Ò»¸öÊÇ epc£¬Ò»¸öÊÇ tid£¬Èç¹ûÎª null£¬
+    // ´ú±í¶ÔÓ¦µÄÖµ²»´æÔÚ¡£
     public void reg_handler(Handler hd) {
         handler_inventer = hd;
     }

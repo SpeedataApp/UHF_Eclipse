@@ -24,25 +24,25 @@ public interface IUHFService {
     public static final String SERIALPORT = "/dev/ttyMT2";
     public static final String POWERCTL = "/sys/class/misc/mtgpio/pin";
 
-    //é»˜è®¤å‚æ•°åˆå§‹åŒ–æ¨¡å—
+    //Ä¬ÈÏ²ÎÊı³õÊ¼»¯Ä£¿é
     public int OpenDev();
 
-    //é‡Šæ”¾æ¨¡å—
+    //ÊÍ·ÅÄ£¿é
     public void CloseDev();
 
-    //å¼€å§‹ç›˜ç‚¹
+    //¿ªÊ¼ÅÌµã
     public void inventory_start();
 
-    // Handlerç”¨äºå¤„ç†è¿”å›çš„ç›˜ç‚¹æ•°æ®
+    // HandlerÓÃÓÚ´¦Àí·µ»ØµÄÅÌµãÊı¾İ
     public void inventory_start(Handler hd);
-    //è®¾ç½®å¯†ç 
+    //ÉèÖÃÃÜÂë
     public int set_Password(int which, String cur_pass, String new_pass);
-     //åœæ­¢ç›˜ç‚¹
+     //Í£Ö¹ÅÌµã
     public void inventory_stop();
 
     /**
-     * ä»æ ‡ç­¾ area åŒºçš„ addr ä½ç½®ï¼ˆä»¥ word è®¡ç®—ï¼‰è¯»å– count ä¸ªå€¼ï¼ˆä»¥ byte è®¡ç®—ï¼‰
-     * passwd æ˜¯è®¿é—®å¯†ç ï¼Œå¦‚æœåŒºåŸŸæ²¡è¢«é”å°±ç»™ 0 å€¼ã€‚
+     * ´Ó±êÇ© area ÇøµÄ addr Î»ÖÃ£¨ÒÔ word ¼ÆËã£©¶ÁÈ¡ count ¸öÖµ£¨ÒÔ byte ¼ÆËã£©
+     * passwd ÊÇ·ÃÎÊÃÜÂë£¬Èç¹ûÇøÓòÃ»±»Ëø¾Í¸ø 0 Öµ¡£
      *
      * @param area
      * @param addr
@@ -55,28 +55,28 @@ public interface IUHFService {
             , String str_count, String str_passwd);
 
 
-    //æŠŠ content ä¸­çš„æ•°æ®å†™åˆ°æ ‡ç­¾ area åŒºä¸­ addrï¼ˆä»¥ word è®¡ç®—ï¼‰å¼€å§‹çš„ä½ ç½®ã€‚
+    //°Ñ content ÖĞµÄÊı¾İĞ´µ½±êÇ© area ÇøÖĞ addr£¨ÒÔ word ¼ÆËã£©¿ªÊ¼µÄÎ» ÖÃ¡£
     public int write_area(int area, int addr, int passwd, byte[] content);
     public int write_area(int area, String addr, String pwd, String count, String content);
 
 
-    //é€‰ä¸­è¦è¿›è¡Œæ“ä½œçš„ epc æ ‡ç­¾
+    //Ñ¡ÖĞÒª½øĞĞ²Ù×÷µÄ epc ±êÇ©
     public int select_card(byte[] epc);
     public int select_card(String epc);
 
 
-    //è®¾ç½®å¤©çº¿åŠŸç‡
+    //ÉèÖÃÌìÏß¹¦ÂÊ
     public int set_antenna_power(int power);
 
-    //è¯»å–å½“å‰å¤©çº¿åŠŸç‡å€¼
+    //¶ÁÈ¡µ±Ç°ÌìÏß¹¦ÂÊÖµ
     public int get_antenna_power();
 
-    //è®¾ç½®é¢‘ç‡åŒºåŸŸ
+    //ÉèÖÃÆµÂÊÇøÓò
     public int set_freq_region(int region);
 
     public int get_freq_region();
 
-    //è®¾ç½®ç›˜ç‚¹çš„handler
+    //ÉèÖÃÅÌµãµÄhandler
     public void reg_handler(Handler hd);
 
 

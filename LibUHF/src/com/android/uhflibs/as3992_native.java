@@ -9,14 +9,11 @@ import com.speedata.libuhf.DeviceControl;
 import com.speedata.libuhf.INV_TIME;
 import com.speedata.libuhf.IUHFService;
 import com.speedata.libuhf.Tag_Data;
-import com.uhf_sdk.uhfpower.UhfPowaer;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-/**
- * Created by å¼ æ˜Ž_ on 2016/12/30.
- */
+
 
 public class as3992_native implements IUHFService {
     private int fd;
@@ -79,8 +76,8 @@ public class as3992_native implements IUHFService {
         close_serial(fd);
     }
 
-    //èŽ·å¾—å½“å‰è½¯ç¡¬ä»¶ç‰ˆæœ¬ä¿¡æ¯
-    //0 ä»£è¡¨èŽ·å–å›ºä»¶ç‰ˆæœ¬ä¿¡æ¯ï¼›1 ä»£è¡¨èŽ·å–è½¯ä»¶ç‰ˆæœ¬ä¿¡æ¯
+    //»ñµÃµ±Ç°ÈíÓ²¼þ°æ±¾ÐÅÏ¢
+    //0 ´ú±í»ñÈ¡¹Ì¼þ°æ±¾ÐÅÏ¢£»1 ´ú±í»ñÈ¡Èí¼þ°æ±¾ÐÅÏ¢
     public byte[] get_version(int which) {
         byte[] cmd = new byte[3];
         cmd[0] = 0x10;
@@ -546,7 +543,7 @@ public class as3992_native implements IUHFService {
         return 0;
     }
 
-    //è®¾ç½®å¯†ç 
+    //ÉèÖÃÃÜÂë
     public int set_Password(int which, String cur_pass, String new_pass) {
         if (which > 1 || which < 0) {
             return -1;
@@ -765,6 +762,9 @@ public class as3992_native implements IUHFService {
     @Override
     public int get_freq_region() {
         Freq_Msg res = get_freq();
+        if (res==null){
+            return -1;
+        }
         if (res.start == 840125) {
             return REGION_CHINA_840_845;
         } else if (res.start == 920625) {
@@ -797,7 +797,7 @@ public class as3992_native implements IUHFService {
         return 0;
     }
 
-    //ä»¥å‰3992æŽ¥å£å®šä¹‰
+    //ÒÔÇ°3992½Ó¿Ú¶¨Òå
     public int setlock(byte type, byte area, byte[] passwd) {
         byte[] cmd = new byte[8];
         cmd[0] = 0x3B;

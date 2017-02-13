@@ -6,9 +6,7 @@ import android.os.Build;
 import android.serialport.SerialPort;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.speedata.libuhf.utils.SharedXmlUtil;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -18,11 +16,11 @@ import java.io.UnsupportedEncodingException;
 
 public class UHFManager {
     private static IUHFService iuhfService;
-    //é£åˆ©ä¿¡è¯»å–åˆ¶é€ å•†æŒ‡ä»¤
+    //·ÉÀûĞÅ¶ÁÈ¡ÖÆÔìÉÌÖ¸Áî
     private static byte[] feilixin_cmd = {(byte) 0xbb, 0x00, 0x03, 0x00, 0x01, 0x02, 0x06, 0x7e};
-    //R2000è·å–ç‰ˆæœ¬å·
+    //R2000»ñÈ¡°æ±¾ºÅ
     private static byte[] r2000_cmd = {(byte) 0xC0, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    //èŠ¯è”
+    //Ğ¾Áª
     private static byte[] xinlian_cmd = {(byte) 0xFF, 0x00, 0x03, 0x1d, 0x0C};
     private final static String FACTORY_FEILIXIN = "FEILIXIN";
     private final static String FACTORY_XINLIAN = "XINLIAN";
@@ -30,10 +28,10 @@ public class UHFManager {
     private final static String FACTORY_3992 = "3992";
     private static int fd;
     private static DeviceControl pw94;
-    public static Context mContext;
+    private static Context mContext;
 
     public static IUHFService getUHFService(Context context) {
-        //  åˆ¤æ–­æ¨¡å—   è¿”å›ä¸åŒçš„æ¨¡å—æ¥å£å¯¹è±¡
+        //  ÅĞ¶ÏÄ£¿é   ·µ»Ø²»Í¬µÄÄ£¿é½Ó¿Ú¶ÔÏó
         mContext = context;
         if (iuhfService == null) {
             if (!judgeModle())
@@ -41,6 +39,10 @@ public class UHFManager {
         }
         return iuhfService;
     }
+
+//    public static Context getmContext(){
+//        return mContext;
+//    }
 
     private static boolean judgeModle() {
         String factory = SharedXmlUtil.getInstance(mContext).read("modle", "");
@@ -52,6 +54,8 @@ public class UHFManager {
                 String xinghao = Build.MODEL;
                 if (xinghao.equals("KT80") || xinghao.equals("W6") || xinghao.equals("N80")) {
                     powerOn("/sys/class/misc/mtgpio/pin", 119);
+                } else if (xinghao.equals("KT55")){
+                    powerOn("/sys/class/misc/mtgpio/pin", 88);
                 } else {
                     powerOn("/sys/class/misc/mtgpio/pin", 94);
                 }
@@ -95,7 +99,7 @@ public class UHFManager {
 
 
     /**
-     * @return è¿”å›å‚å®¶ä¿¡æ¯
+     * @return ·µ»Ø³§¼ÒĞÅÏ¢
      */
     private static String getModle() {
         String factory = "";
@@ -107,16 +111,17 @@ public class UHFManager {
         }
         fd = serialPort.getFd();
         byte[] bytes = new byte[1024];
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
 
-        //åˆ¤æ–­æ˜¯ä¸æ˜¯R2000
+        //ÅĞ¶ÏÊÇ²»ÊÇR2000
+        serialPort.clearPortBuf(fd);
         serialPort.WriteSerialByte(fd, r2000_cmd);
         try {
-            bytes = serialPort.ReadSerial(fd, 1024 * 2);
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+            bytes = serialPort.ReadSerial(fd, 1024);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -130,10 +135,16 @@ public class UHFManager {
         }
 
 
-        //åˆ¤æ–­æ˜¯ä¸æ˜¯æ——è”-é£åˆ©ä¿¡
+        //ÅĞ¶ÏÊÇ²»ÊÇÆìÁª-·ÉÀûĞÅ
+        serialPort.clearPortBuf(fd);
         serialPort.WriteSerialByte(fd, feilixin_cmd);
         try {
-            bytes = serialPort.ReadSerial(fd, 1024 * 2);
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+            bytes = serialPort.ReadSerial(fd, 1024);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -146,10 +157,16 @@ public class UHFManager {
             }
         }
 
-        //åˆ¤æ–­æ˜¯ä¸æ˜¯æ——è”-èŠ¯è”
+        //ÅĞ¶ÏÊÇ²»ÊÇÆìÁª-Ğ¾Áª
+        serialPort.clearPortBuf(fd);
         serialPort.WriteSerialByte(fd, xinlian_cmd);
         try {
-            bytes = serialPort.ReadSerial(fd, 1024 * 2);
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+            bytes = serialPort.ReadSerial(fd, 1024);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
