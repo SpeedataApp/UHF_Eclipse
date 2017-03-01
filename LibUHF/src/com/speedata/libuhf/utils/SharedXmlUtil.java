@@ -17,7 +17,7 @@ import com.speedata.libuhf.R;
 
 
 /**
- * 本地SharedPreferences数据保存读取工具类
+ * 鏈湴SharedPreferences鏁版嵁淇濆瓨璇诲彇宸ュ叿绫�
  *
  * @author Jason
  */
@@ -35,7 +35,7 @@ public class SharedXmlUtil {
 
     private SharedXmlUtil(Context context) {
         mShared = context.getSharedPreferences(
-                context.getString(R.string.app_name),
+                "uhf",
                 Context.MODE_MULTI_PROCESS);
         mEditor = mShared.edit();
     }
