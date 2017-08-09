@@ -4,9 +4,13 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry exported="true" kind="lib" path="libs/eventbus-3.0.0.jar"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/LibDevice"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/LibUHF"/>
+	<classpathentry exported="true" kind="lib" path="libs/device.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/Module_Android_DemoPower_1.7.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/ModuleAPI_J.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/Qilian_Feilixin_uhf.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/R2K.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/uhf.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

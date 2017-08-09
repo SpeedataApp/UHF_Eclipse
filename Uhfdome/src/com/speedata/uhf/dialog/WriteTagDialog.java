@@ -1,10 +1,12 @@
 package com.speedata.uhf.dialog;
 
+import android.R.integer;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,8 +18,10 @@ import com.speedata.uhf.R;
 
 import org.greenrobot.eventbus.EventBus;
 
+import static android.content.ContentValues.TAG;
+
 /**
- * Created by ÕÅÃ÷_ on 2016/12/27.
+ * Created by å¯®çŠ³æ§‘_ on 2016/12/27.
  */
 
 public class WriteTagDialog extends Dialog implements
@@ -75,12 +79,14 @@ public class WriteTagDialog extends Dialog implements
             final String str_addr = Write_Addr.getText().toString();
             final String str_count = Write_Count.getText().toString();
             final String str_passwd = Write_Passwd.getText().toString();
-            Status.setText("ÕıÔÚĞ´¿¨ÖĞ....");
+            Status.setText("å§ï½…æ¹ªéæ¬å´±æ¶“ï¿½....");
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(TAG, "write start: "+System.currentTimeMillis());
                     int rev=iuhfService.write_area(which_choose,str_addr,str_passwd,str_count
                             ,str_content);
+                    Log.d(TAG, "write end: "+System.currentTimeMillis());
                     Message message=new Message();
                     message.what=1;
                     message.obj=rev;
@@ -99,7 +105,7 @@ public class WriteTagDialog extends Dialog implements
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what==1){
-                int rev= (Integer) msg.obj;
+                int rev= (Integer)msg.obj;
                 if (rev == 0) {
                     EventBus.getDefault().post(new MsgEvent("write_Status","" ));
                     dismiss();

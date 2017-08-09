@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">uhf</string>
 
-    <string name="Search_Btn_T">选择</string>
+    <string name="Search_Btn_T">选卡</string>
     <string name="Read_Btn_T">读</string>
     <string name="Write_Btn_T">写</string>
     <string name="Name_item">Current Card(by EPC):</string>
@@ -79,7 +79,7 @@
     <string name="DEV_OPEN_ERR">Device open failed！Software will quit！</string>
     <string name="DIA_ALERT">警告！</string>
     <string name="DIA_CHECK">确定</string>
-    <string name="VALUE_ZERO">0</string>
+    <string name="VALUE_ZERO">00000000</string>
     <!--    <string name=""></string>  -->
     <string name="btn_set">设置</string>
     <string name="view_wt">工作时间</string>
@@ -90,4 +90,5 @@
     <string name="antenna_p">天线功率</string>
     <string name="spt">速度\n测试</string>
     <string name="sptss">开始</string>
+    <string name="inv_set">盘点内容设置</string>
 </resources>
