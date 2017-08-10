@@ -64,16 +64,11 @@ public class MainActivity extends Activity implements OnClickListener {
             iuhfService = UHFManager.getUHFService(MainActivity.this);
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(MainActivity.this, "模块不存在", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "模块不识别", Toast.LENGTH_SHORT).show();
             return;
         }
         modle = SharedXmlUtil.getInstance(MainActivity.this).read("modle", "");
         initUI();
-//        StringBuffer stringBuffer=new StringBuffer();
-//        for (int i = 0; i < 100; i++) {
-//            stringBuffer.append("1");
-//        }
-//        Tag_Content.setText(stringBuffer+"");
         Version.append("-"+modle);
         newWakeLock();
         EventBus.getDefault().register(this);
@@ -105,8 +100,8 @@ public class MainActivity extends Activity implements OnClickListener {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
         try {
             if (iuhfService != null) {
                 iuhfService.CloseDev();
@@ -228,7 +223,7 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         wK.release();
-        //注销广播、对象制空
+        //娉ㄩ攢骞挎挱銆佸璞″埗绌�
         UHFManager.closeUHFService();
         EventBus.getDefault().unregister(this);
     }
@@ -241,7 +236,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 Status.setText(R.string.Status_No_Card_Select);
                 return;
             }
-            //读卡
+            //璇诲崱
             ReadTagDialog readTag = new ReadTagDialog(this, iuhfService
                     , Area_Select.getSelectedItemPosition(), current_tag_epc, modle);
             readTag.setTitle(R.string.Item_Read);
@@ -251,7 +246,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 Status.setText(R.string.Status_No_Card_Select);
                 return;
             }
-            //写卡
+            //鍐欏崱
             WriteTagDialog writeTag = new WriteTagDialog(this, iuhfService,
                     Tag_Content.getText().toString(), Area_Select.getSelectedItemPosition()
                     , current_tag_epc, modle);
@@ -259,13 +254,13 @@ public class MainActivity extends Activity implements OnClickListener {
             writeTag.show();
         } else if (arg0 == Search_Tag) {
 
-            //盘点选卡
+            //鐩樼偣閫夊崱
             SearchTagDialog searchTag = new SearchTagDialog(this, iuhfService, modle);
             searchTag.setTitle(R.string.Item_Choose);
             searchTag.show();
 
         } else if (arg0 == Set_Tag) {
-            //设置频率频段
+            //璁剧疆棰戠巼棰戞
             SetModuleDialog setDialog = new SetModuleDialog(this, iuhfService, modle);
             setDialog.setTitle(R.string.Item_Set_Title);
             setDialog.show();
@@ -275,7 +270,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 Status.setText(R.string.Status_No_Card_Select);
                 return;
             }
-            //设置密码
+            //璁剧疆瀵嗙爜
             SetPasswordDialog setPasswordDialog = new SetPasswordDialog(this
                     , iuhfService, current_tag_epc, modle);
             setPasswordDialog.setTitle(R.string.SetPasswd_Btn);
@@ -285,7 +280,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 Status.setText(R.string.Status_No_Card_Select);
                 return;
             }
-            //写EPC
+            //鍐橢PC
             SetEPCDialog setEPCDialog = new SetEPCDialog(this, iuhfService, current_tag_epc);
             setEPCDialog.setTitle(R.string.SetEPC_Btn);
             setEPCDialog.show();
@@ -294,7 +289,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 Status.setText(R.string.Status_No_Card_Select);
                 return;
             }
-            //锁
+            //閿�
             LockTagDialog lockTagDialog = new LockTagDialog(this, iuhfService
                     , current_tag_epc, modle);
             lockTagDialog.setTitle(R.string.Lock_Btn);
@@ -304,7 +299,7 @@ public class MainActivity extends Activity implements OnClickListener {
             sptd.setTitle("Speed Test");
             sptd.show();
         } else if (arg0 == btn_inv_set) {
-            //盘点内容设置
+            //鐩樼偣鍐呭璁剧疆
             InvSetDialog invSetDialog = new InvSetDialog(this, iuhfService);
             invSetDialog.setTitle("Inv Set");
             invSetDialog.show();
